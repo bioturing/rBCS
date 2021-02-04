@@ -1,6 +1,8 @@
 #' @title Export a Seurat object in BCS format
 #' @param object a Seurat object
 #' @param bcs.path path to BCS file
+#' @param unique.limit ignore a metadata if it has number of unique labels larger than this number. Default is 100.
+#' @param clustering.name name of the metadata for clustering result. Default is "seurat_clusters".
 #' @import Matrix
 #' @import rhdf5
 #' @importFrom jsonlite write_json
@@ -8,7 +10,7 @@
 #' @importFrom utils zip
 #' @importFrom methods as
 #' @export
-ExportSeuratObject <- function(object, bcs.path) {
+ExportSeuratObject <- function(object, bcs.path, unique.limit=100, clustering.name="seurat_clusters") {
   GetSparseMatrix <- function(x) {
     if (class(x)[1] == "dgCMatrix") {
       return(x)
@@ -110,10 +112,20 @@ ExportSeuratObject <- function(object, bcs.path) {
       history = list(CreateCommit())
     )
 
+    # Use existing clustering result
+    if (info$name == clustering.name) {
+      info$type <- "category"
+      info$name <- "Graph-based clusters"
+      info$id <- "graph_based"
+      if (!any(is.na(as.numeric(info$clusters)))) {
+        info$clusters <- paste("Cluster", as.numeric(info$clusters))
+      }
+    }
+
     # Category counting
     if (info$type == "category") {
       info$clusterName <- c("Unassigned", as.character(unique(info$clusters)))
-      if (length(info$clusterName) > 100) {
+      if (length(info$clusterName) > unique.limit) {
         Meow("WARNING: Bad metadata -", info$name)
         info$bad <- TRUE
         return(info)
@@ -129,19 +141,21 @@ ExportSeuratObject <- function(object, bcs.path) {
   meta.list$content <- meta.list$content[sapply(meta.list$content, function(x) is.null(x$bad))]
   names(meta.list$content) <- sapply(meta.list$content, function(x) x$id)
   
-  # Add fake graph-based result. TODO: Recognize graph-based result from object
-  graph <- list(
-    id = "graph_based",
-    name = "Graph-based clusters",
-    type = "category",
-    clusters = rep(1, ncol(norms)),
-    clusterName = c("Unassigned", "Cluster 1"),
-    clusterLength = c(0, ncol(norms)),
-    history = list(CreateCommit())
-  )
-  jsonlite::write_json(graph, file.path(meta.dir, "graph_based.json"), auto_unbox=TRUE)
-  graph$clusters <- NULL
-  meta.list$content$graph_based <- graph
+  # Add a fake graph-based result. TODO: Recognize graph-based result from object
+  if (is.null(meta.list$content$graph_based)) {
+    graph <- list(
+      id = "graph_based",
+      name = "Graph-based clusters",
+      type = "category",
+      clusters = rep(1, ncol(norms)),
+      clusterName = c("Unassigned", "Cluster 1"),
+      clusterLength = c(0, ncol(norms)),
+      history = list(CreateCommit())
+    )
+    jsonlite::write_json(graph, file.path(meta.dir, "graph_based.json"), auto_unbox=TRUE)
+    graph$clusters <- NULL
+    meta.list$content$graph_based <- graph
+  }
 
   jsonlite::write_json(meta.list, file.path(meta.dir, "metalist.json"), auto_unbox=TRUE)
   
