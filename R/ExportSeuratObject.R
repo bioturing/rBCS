@@ -43,10 +43,23 @@ ExportSeuratObject <- function(object, bcs.path) {
     ))
   }
 
+  ValidateObject <- function() {
+    if (length(object@reductions) == 0) {
+      stop("Seurat object has no dimensionality reduction")
+    }
+    if (!"RNA" %in% names(object@assays)) {
+      stop("Seurat object has no RNA assay")
+    }
+  }
+
+  ValidateObject()
+
   Meow("Initializing...")
   hash <- uuid::UUIDgenerate()
   old.wd <- getwd()
-  setwd(dirname(bcs.path)) # easier for zipping
+  tmp.wd <- dirname(bcs.path)
+  dir.create(tmp.wd, recursive=TRUE, showWarnings=FALSE)
+  setwd(tmp.wd) # easier for zipping
   on.exit(setwd(old.wd))
   dir.create(file.path(hash, "main"), recursive=TRUE)
 
