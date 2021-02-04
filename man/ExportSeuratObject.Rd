@@ -4,12 +4,21 @@
 \alias{ExportSeuratObject}
 \title{Export a Seurat object in BCS format}
 \usage{
-ExportSeuratObject(object, bcs.path)
+ExportSeuratObject(
+  object,
+  bcs.path,
+  unique.limit = 100,
+  clustering.name = "seurat_clusters"
+)
 }
 \arguments{
 \item{object}{a Seurat object}
 
 \item{bcs.path}{path to BCS file}
+
+\item{unique.limit}{ignore a metadata if it has number of unique labels larger than this number. Default is 100.}
+
+\item{clustering.name}{name of the metadata for clustering result. Default is "seurat_clusters".}
 }
 \description{
 Export a Seurat object in BCS format
