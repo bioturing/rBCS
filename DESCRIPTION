@@ -1,0 +1,18 @@
+Package: rBCS
+Title: Handle BioTuring Compressed File
+Version: 0.0.1
+Author: BioTuring
+Maintainer: BioTuring <support@bioturing.com>
+Description: Convert single cell data to BioTuring Compressed File.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports:
+    Matrix,
+    rhdf5,
+    jsonlite,
+    uuid,
+    methods,
+    utils
