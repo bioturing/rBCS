@@ -7,10 +7,16 @@
 #' @import rhdf5
 #' @importFrom jsonlite write_json
 #' @importFrom uuid UUIDgenerate
-#' @importFrom utils zip
+#' @importFrom zip zip
 #' @importFrom methods as
 #' @export
-ExportSeuratObject <- function(object, bcs.path, unique.limit=100, clustering.name="seurat_clusters") {
+ExportSeuratObject <- function(
+  object,
+  bcs.path,
+  unique.limit = 100,
+  clustering.name = "seurat_clusters",
+  compression.level = 1
+) {
   GetSparseMatrix <- function(x) {
     if (class(x)[1] == "dgCMatrix") {
       return(x)
@@ -207,7 +213,7 @@ ExportSeuratObject <- function(object, bcs.path, unique.limit=100, clustering.na
   jsonlite::write_json(run.info, file.path(hash, "run_info.json"), auto_unbox=TRUE)
 
   Meow("Compressing data...")
-  zip(bcs.path, hash, flags="-r1q")
+  zip::zip(bcs.path, hash, compression_level=1)
   unlink(hash, recursive=TRUE, force=TRUE)
   return(TRUE)
 }

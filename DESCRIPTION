@@ -15,4 +15,5 @@ Imports:
     jsonlite,
     uuid,
     methods,
-    utils
+    utils,
+    zip
