@@ -3,6 +3,8 @@
 #' @param bcs.path path to BCS file
 #' @param unique.limit ignore a metadata if it has number of unique labels larger than this number. Default is 100.
 #' @param clustering.name name of the metadata for clustering result. Default is "seurat_clusters".
+#' @param compression.level an integer ranging from 1 to 9. Higher level creates smaller files but takes more time to create and load. Default is 1.
+#' @param author email of the creator
 #' @import Matrix
 #' @import rhdf5
 #' @importFrom jsonlite write_json
@@ -15,7 +17,8 @@ ExportSeuratObject <- function(
   bcs.path,
   unique.limit = 100,
   clustering.name = "seurat_clusters",
-  compression.level = 1
+  compression.level = 1,
+  author = "rBCS"
 ) {
   GetSparseMatrix <- function(x) {
     if (class(x)[1] == "dgCMatrix") {
@@ -46,7 +49,7 @@ ExportSeuratObject <- function(
     return(list(
       hash_id = uuid::UUIDgenerate(),
       created_at = as.numeric(Sys.time()) * 1000,
-      created_by = "support@bioturing.com",
+      created_by = author,
       description = "Converted with rBCS"
     ))
   }
@@ -213,7 +216,7 @@ ExportSeuratObject <- function(
   jsonlite::write_json(run.info, file.path(hash, "run_info.json"), auto_unbox=TRUE)
 
   Meow("Compressing data...")
-  zip::zip(bcs.path, hash, compression_level=1)
+  zip::zip(bcs.path, hash, compression_level=compression.level)
   unlink(hash, recursive=TRUE, force=TRUE)
   return(TRUE)
 }

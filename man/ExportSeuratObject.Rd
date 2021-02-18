@@ -8,7 +8,9 @@ ExportSeuratObject(
   object,
   bcs.path,
   unique.limit = 100,
-  clustering.name = "seurat_clusters"
+  clustering.name = "seurat_clusters",
+  compression.level = 1,
+  author = "rBCS"
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ ExportSeuratObject(
 \item{unique.limit}{ignore a metadata if it has number of unique labels larger than this number. Default is 100.}
 
 \item{clustering.name}{name of the metadata for clustering result. Default is "seurat_clusters".}
+
+\item{compression.level}{an integer ranging from 1 to 9. Higher level creates smaller files but takes more time to create and load. Default is 1.}
+
+\item{author}{email of the creator}
 }
 \description{
 Export a Seurat object in BCS format
