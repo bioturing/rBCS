@@ -20,3 +20,5 @@ install_github("bioturing/rBCS", INSTALL_opts="--no-multiarch")
 require(rBCS)
 ExportSeuratObject(seurat.object, "/mnt/example/path.bcs")
 ```
+
+Note: Avoid using `~/...` in Windows
