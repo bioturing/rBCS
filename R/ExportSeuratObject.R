@@ -27,6 +27,24 @@ ExportSeuratObject <- function(
     return(as(x, "sparseMatrix"))
   }
 
+  IsNullMatrix <- function(x) {
+    return(is.null(x) || (nrow(x) == 0 || ncol(x) == 0))
+  }
+
+  # assays: list of Assay class in Seurat
+  # key: a vector of key sort by priority (descending)
+  GetData <- function(assays, assay.name, key) {
+    data <- attr(assays[[assay.name]], key[1])
+    if (IsNullMatrix(data) && length(key) > 1) {
+      Meow("[WARNING] Assay", assay.name, "has no", key[1])
+      data <- GetData(assays, assay.name, key[-1])
+    }
+    if (!IsNullMatrix(data)) {
+      data <- GetSparseMatrix(data)
+    }
+    return(data)
+  }
+
   WriteH5Matrix <- function(m, group, need.transpose=FALSE) {
     rhdf5::h5createGroup(h5, group)
     if (need.transpose) {
@@ -59,7 +77,10 @@ ExportSeuratObject <- function(
       stop("Seurat object has no dimensionality reduction")
     }
     if (!"RNA" %in% names(object@assays)) {
-      stop("Seurat object has no RNA assay")
+      stop("Seurat object must have an RNA assay")
+    }
+    if (!all(names(object@assays), c("RNA", "ADT"))) {
+      Meow("[WARNING] This object has several assays. rBCS only use data from either RNA or ADT.")
     }
   }
 
@@ -76,13 +97,13 @@ ExportSeuratObject <- function(
 
   Meow("Extracting expressions...")
   omics <- names(object@assays)
-  counts <- GetSparseMatrix(object@assays$RNA@counts)
-  norms <- GetSparseMatrix(object@assays$RNA@data)
+  counts <- GetData(object@assays, "RNA", c("counts", "data"))
+  norms <- GetData(object@assays, "RNA", "data")
   feature.type <- rep("RNA", nrow(norms))
   feature.name <- rownames(norms)
   if ("ADT" %in% omics) {
-    counts <- Matrix::rbind2(counts, GetSparseMatrix(object@assays$ADT@counts))
-    norms <- Matrix::rbind2(norms, GetSparseMatrix(object@assays$ADT@data))
+    counts <- Matrix::rbind2(counts, GetData(object@assays, "ADT", c("counts", "data")))
+    norms <- Matrix::rbind2(norms, GetData(object@assays, "ADT", "data"))
     feature.type <- c(feature.type, rep("ADT", nrow(norms) - length(feature.type)))
     feature.name <- rownames(norms)
     feature.name[feature.type == "ADT"] <- paste("ADT", feature.name[feature.type == "ADT"], sep="-")
