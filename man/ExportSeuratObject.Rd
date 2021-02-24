@@ -10,7 +10,8 @@ ExportSeuratObject(
   unique.limit = 100,
   clustering.name = "seurat_clusters",
   compression.level = 1,
-  author = "rBCS"
+  author = "rBCS",
+  overwrite = FALSE
 )
 }
 \arguments{
@@ -24,7 +25,9 @@ ExportSeuratObject(
 
 \item{compression.level}{an integer ranging from 1 to 9. Higher level creates smaller files but takes more time to create and load. Default is 1.}
 
-\item{author}{email of the creator}
+\item{author}{email of the creator. Default is rBCS.}
+
+\item{overwrite}{if TRUE, overwrite existing file at bcs.path. Default is FALSE.}
 }
 \description{
 Export a Seurat object in BCS format
