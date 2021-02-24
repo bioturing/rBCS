@@ -38,7 +38,7 @@ ExportSeuratObject <- function(
   GetData <- function(assays, assay.name, keys) {
     data <- attr(assays[[assay.name]], keys[1])
     if (IsNullMatrix(data) && length(keys) > 1) {
-      Meow("[WARNING] Assay", assay.name, "has no", keys[1])
+      warning(paste("Assay", assay.name, "has no", keys[1]))
       data <- GetData(assays, assay.name, keys[-1])
     }
     if (!IsNullMatrix(data)) {
@@ -82,11 +82,11 @@ ExportSeuratObject <- function(
       stop("Seurat object must have an RNA assay")
     }
     if (!all(names(object@assays) %in% c("RNA", "ADT"))) {
-      Meow("[WARNING] This object has several assays. rBCS only use data from either RNA or ADT.")
+      warning("This object has several assays. rBCS only use data from either RNA or ADT.")
     }
     if (file.exists(bcs.path)) {
       if (overwrite) {
-        Meow("[WARNING]", basename(bcs.path), "will be replaced")
+        warning(paste(basename(bcs.path), "will be replaced"))
         file.remove(bcs.path)
       } else {
         stop(paste(basename(bcs.path), "already exists. Please use overwrite=TRUE to force replacing."))
@@ -167,7 +167,7 @@ ExportSeuratObject <- function(
       info$clusters[is.na(info$clusters)] <- "Unassigned"
       info$clusterName <- c("Unassigned", unique(info$clusters))
       if (length(info$clusterName) > unique.limit) {
-        Meow("WARNING: Bad metadata -", info$name)
+        warning(paste("Bad metadata -", info$name))
         info$bad <- TRUE
         return(info)
       }
