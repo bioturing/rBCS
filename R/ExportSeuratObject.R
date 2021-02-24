@@ -30,16 +30,16 @@ ExportSeuratObject <- function(
   }
 
   IsNullMatrix <- function(x) {
-    return(is.null(x) || (nrow(x) == 0 || ncol(x) == 0))
+    return(is.null(x) || nrow(x) == 0 || ncol(x) == 0)
   }
 
   # assays: list of Assay class in Seurat
-  # key: a vector of key sort by priority (descending)
-  GetData <- function(assays, assay.name, key) {
-    data <- attr(assays[[assay.name]], key[1])
-    if (IsNullMatrix(data) && length(key) > 1) {
-      Meow("[WARNING] Assay", assay.name, "has no", key[1])
-      data <- GetData(assays, assay.name, key[-1])
+  # keys: a vector of keys sort by priority (descending)
+  GetData <- function(assays, assay.name, keys) {
+    data <- attr(assays[[assay.name]], keys[1])
+    if (IsNullMatrix(data) && length(keys) > 1) {
+      Meow("[WARNING] Assay", assay.name, "has no", keys[1])
+      data <- GetData(assays, assay.name, keys[-1])
     }
     if (!IsNullMatrix(data)) {
       data <- GetSparseMatrix(data)
