@@ -4,7 +4,8 @@
 #' @param unique.limit ignore a metadata if it has number of unique labels larger than this number. Default is 100.
 #' @param clustering.name name of the metadata for clustering result. Default is "seurat_clusters".
 #' @param compression.level an integer ranging from 1 to 9. Higher level creates smaller files but takes more time to create and load. Default is 1.
-#' @param author email of the creator
+#' @param author email of the creator. Default is rBCS.
+#' @param overwrite if TRUE, overwrite existing file at bcs.path. Default is FALSE.
 #' @import Matrix
 #' @import rhdf5
 #' @importFrom jsonlite write_json
@@ -18,7 +19,8 @@ ExportSeuratObject <- function(
   unique.limit = 100,
   clustering.name = "seurat_clusters",
   compression.level = 1,
-  author = "rBCS"
+  author = "rBCS",
+  overwrite = FALSE
 ) {
   GetSparseMatrix <- function(x) {
     if (class(x)[1] == "dgCMatrix") {
@@ -72,19 +74,27 @@ ExportSeuratObject <- function(
     ))
   }
 
-  ValidateObject <- function() {
+  ValidateInput <- function() {
     if (length(object@reductions) == 0) {
       stop("Seurat object has no dimensionality reduction")
     }
     if (!"RNA" %in% names(object@assays)) {
       stop("Seurat object must have an RNA assay")
     }
-    if (!all(names(object@assays), c("RNA", "ADT"))) {
+    if (!all(names(object@assays) %in% c("RNA", "ADT"))) {
       Meow("[WARNING] This object has several assays. rBCS only use data from either RNA or ADT.")
+    }
+    if (file.exists(bcs.path)) {
+      if (overwrite) {
+        Meow("[WARNING]", basename(bcs.path), "will be replaced")
+        file.remove(bcs.path)
+      } else {
+        stop(paste(basename(bcs.path), "already exists. Please use overwrite=TRUE to force replacing."))
+      }
     }
   }
 
-  ValidateObject()
+  ValidateInput()
 
   Meow("Initializing...")
   hash <- uuid::UUIDgenerate()
