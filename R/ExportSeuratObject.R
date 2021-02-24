@@ -146,7 +146,7 @@ ExportSeuratObject <- function(
       id = uuid::UUIDgenerate(),
       name = colnames(object@meta.data)[i],
       type = if (is.numeric(object@meta.data[[i]])) "numeric" else "category",
-      clusters = object@meta.data[[i]],
+      clusters = as.character(object@meta.data[[i]]),
       clusterName = "NaN",
       clusterLength = 0,
       history = list(CreateCommit())
@@ -164,13 +164,14 @@ ExportSeuratObject <- function(
 
     # Category counting
     if (info$type == "category") {
-      info$clusterName <- c("Unassigned", as.character(unique(info$clusters)))
+      info$clusters[is.na(info$clusters)] <- "Unassigned"
+      info$clusterName <- c("Unassigned", unique(info$clusters))
       if (length(info$clusterName) > unique.limit) {
         Meow("WARNING: Bad metadata -", info$name)
         info$bad <- TRUE
         return(info)
       }
-      info$clusterLength <- c(0, as.numeric(table(info$clusters)))
+      info$clusterLength <- sapply(info$clusterName, function(x) sum(info$clusters == x))
       info$clusters <- match(as.character(info$clusters), info$clusterName) - 1 # base-0
     }
 
