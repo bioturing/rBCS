@@ -5,11 +5,10 @@
 #' @param study.path path to study directory
 #' @param clustering.name name of metadata that indicates clustering result
 #' @param author email of the creator
-#' @param title title of the study
 #' @importFrom jsonlite write_json
 #' @importFrom uuid UUIDgenerate
 WriteStudy <- function(
-  expr.data, metadata, dimred.data, study.path, clustering.name, author, unique.limit, title
+  expr.data, metadata, dimred.data, study.path, clustering.name, author, unique.limit
 ) {
   CreateCommit <- function() {
     return(list(
@@ -147,7 +146,7 @@ WriteStudy <- function(
       addon = "SingleCell",
       n_batch = 1,
       platform = "unknown",
-      title = title,
+      title = "Untitled study",
       unit = "umi",
       author = list(),
       abstract = "",
