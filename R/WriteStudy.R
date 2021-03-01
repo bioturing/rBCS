@@ -132,6 +132,7 @@ WriteStudy <- function(
       return(info)
     })
     names(dimred$data) <- sapply(dimred$data, function(x) x$id)
+    dimred$default <- tail(names(dimred$data), 1)
     jsonlite::write_json(dimred, file.path(dimred.dir, "meta"), auto_unbox=TRUE)
   }
 
