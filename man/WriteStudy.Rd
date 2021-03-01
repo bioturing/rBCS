@@ -2,7 +2,7 @@
 % Please edit documentation in R/WriteStudy.R
 \name{WriteStudy}
 \alias{WriteStudy}
-\title{}
+\title{Write a BBrowser study}
 \usage{
 WriteStudy(
   expr.data,
@@ -28,5 +28,5 @@ WriteStudy(
 \item{author}{email of the creator}
 }
 \description{
-
+Write a BBrowser study
 }

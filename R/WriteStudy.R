@@ -1,4 +1,4 @@
-#' @title
+#' @title Write a BBrowser study
 #' @param expr.data list of counts, norms, and feature_type
 #' @param metadata a data.frame of metadata
 #' @param dimred.data a named list of dimensionality reductions
