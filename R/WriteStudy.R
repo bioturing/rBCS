@@ -5,8 +5,12 @@
 #' @param study.path path to study directory
 #' @param clustering.name name of metadata that indicates clustering result
 #' @param author email of the creator
+#' @param title title of the study
+#' @importFrom jsonlite write_json
 #' @importFrom uuid UUIDgenerate
-WriteStudy <- function(expr.data, metadata, dimred.data, study.path, clustering.name, author, unique.limit) {
+WriteStudy <- function(
+  expr.data, metadata, dimred.data, study.path, clustering.name, author, unique.limit, title
+) {
   CreateCommit <- function() {
     return(list(
       hash_id = uuid::UUIDgenerate(),
@@ -132,7 +136,7 @@ WriteStudy <- function(expr.data, metadata, dimred.data, study.path, clustering.
     jsonlite::write_json(dimred, file.path(dimred.dir, "meta"), auto_unbox=TRUE)
   }
 
-  WriteRunInfo <- function(study.path, omics, n.cell) {
+  WriteRunInfo <- function(study.path, omics, n.cell, title) {
     Meow("Writing general information...")
     run.info <- list(
       species = "human",
@@ -143,7 +147,7 @@ WriteStudy <- function(expr.data, metadata, dimred.data, study.path, clustering.
       addon = "SingleCell",
       n_batch = 1,
       platform = "unknown",
-      title = object@project.name,
+      title = title,
       unit = "umi",
       author = list(),
       abstract = "",

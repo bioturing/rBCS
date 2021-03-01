@@ -8,7 +8,6 @@
 #' @param overwrite if TRUE, overwrite existing file at bcs.path. Default is FALSE.
 #' @import Matrix
 #' @import rhdf5
-#' @importFrom jsonlite write_json
 #' @importFrom zip zip
 #' @importFrom methods as
 #' @export
