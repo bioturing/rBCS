@@ -142,6 +142,7 @@ WriteStudy <- function(
   }
 
   WriteLowDimred <- function(dimred.data, study.path) {
+    Meow("Writing intermediate embeddings...")
     h5.path <- file.path(study.path, "main", "pca_result.hdf5")
     h5 <- rhdf5::H5Fcreate(h5.path)
     for (i in seq_along(dimred.data)) {
