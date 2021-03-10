@@ -85,14 +85,26 @@ ExportSeuratObject <- function(
     data <- lapply(object@reductions, function(dimred) {
       info <- list(
         param = list(omics=dimred@assay.used),
-        coords = as.matrix(dimred@cell.embeddings)
+        coords = as.matrix(dimred@cell.embeddings),
+        type = "dimred"
       )
-      if (ncol(info$coords) > 3) {
-        info$coords <- info$coords[, 1:3]
-      }
       return(info)
     })
     names(data) <- names(object@reductions)
+
+    # Mark lower dimred data
+    for (i in which(names(data) %in% c("pca", "mnn", "harmony"))) {
+      data[[i]]$type <- "low_dimred"
+    }
+
+    # CCA
+    if ("integrated" %in% names(object@assays)) {
+      data$cca <- list(
+        coords = object@assays$integrated@data,
+        type = "low_dimred"
+      )
+    }
+
     return(data)
   }
 
