@@ -5,8 +5,6 @@
 #' @param study.path path to study directory
 #' @param clustering.name name of metadata that indicates clustering result
 #' @param author email of the creator
-#' @importFrom jsonlite write_json
-#' @importFrom uuid UUIDgenerate
 WriteStudy <- function(
   expr.data, metadata, dimred.data, study.path, clustering.name, author, unique.limit
 ) {
