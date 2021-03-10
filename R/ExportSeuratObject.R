@@ -114,7 +114,7 @@ ExportSeuratObject <- function(
       clustering.name, author, unique.limit)
 
   Meow("Compressing data...")
-  zip::zip(bcs.path, hash, compression_level=compression.level)
+  zip::zip(basename(bcs.path), hash, compression_level=compression.level)
   unlink(hash, recursive=TRUE, force=TRUE)
   return(TRUE)
 }
