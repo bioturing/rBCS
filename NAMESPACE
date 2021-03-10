@@ -2,8 +2,4 @@
 
 export(ExportSeuratObject)
 import(Matrix)
-import(rhdf5)
-importFrom(jsonlite,write_json)
-importFrom(methods,as)
-importFrom(uuid,UUIDgenerate)
 importFrom(zip,zip)

@@ -5,8 +5,6 @@
 #' @param study.path path to study directory
 #' @param clustering.name name of metadata that indicates clustering result
 #' @param author email of the creator
-#' @importFrom jsonlite write_json
-#' @importFrom uuid UUIDgenerate
 WriteStudy <- function(
   expr.data, metadata, dimred.data, study.path, clustering.name, author, unique.limit
 ) {
@@ -19,14 +17,16 @@ WriteStudy <- function(
     ))
   }
 
-  WriteH5Matrix <- function(matrix, h5, group) {
+  WriteH5Matrix <- function(matrix, h5, group, write.labels=TRUE) {
     rhdf5::h5createGroup(h5, group)
     rhdf5::h5write(matrix@x, h5, paste0(group, "/data"))
     rhdf5::h5write(matrix@p, h5, paste0(group, "/indptr"))
     rhdf5::h5write(matrix@i, h5, paste0(group, "/indices"))
     rhdf5::h5write(dim(matrix), h5, paste0(group, "/shape"))
-    rhdf5::h5write(colnames(matrix), h5, paste0(group, "/barcodes"))
-    rhdf5::h5write(rownames(matrix), h5, paste0(group, "/features"))
+    if (write.labels) {
+      rhdf5::h5write(colnames(matrix), h5, paste0(group, "/barcodes"))
+      rhdf5::h5write(rownames(matrix), h5, paste0(group, "/features"))
+    }
   }
 
   WriteExpressionData <- function(expr.data, study.path) {
@@ -127,13 +127,33 @@ WriteStudy <- function(
         history = list(CreateCommit())
       )
       info$size <- dim(info$coords)
-      jsonlite::write_json(info, file.path(dimred.dir, info$id), auto_unbox=TRUE)
+      if (dimred.data[[i]]$type == "dimred") {
+        jsonlite::write_json(info, file.path(dimred.dir, info$id), auto_unbox=TRUE)
+      }
       info$coords <- NULL # meta does not need this info
       return(info)
     })
+    dimred$data <- dimred$data[sapply(dimred.data, function(x) x$type == "dimred")]
     names(dimred$data) <- sapply(dimred$data, function(x) x$id)
     dimred$default <- tail(names(dimred$data), 1)
     jsonlite::write_json(dimred, file.path(dimred.dir, "meta"), auto_unbox=TRUE)
+  }
+
+  WriteLowDimred <- function(dimred.data, study.path) {
+    Meow("Writing intermediate embeddings...")
+    h5.path <- file.path(study.path, "main", "pca_result.hdf5")
+    h5 <- rhdf5::H5Fcreate(h5.path)
+    for (i in seq_along(dimred.data)) {
+      coords <- dimred.data[[i]]$coords
+      if (dimred.data[[i]]$type == "low_dimred") {
+        if (class(coords)[1] == "matrix") {
+          rhdf5::h5write(coords, h5.path, names(dimred.data)[i])
+        } else if (class(coords)[1] == "dgCMatrix") {
+          WriteH5Matrix(coords, h5.path, names(dimred.data)[i], write.labels=FALSE)
+        }
+      }
+    }
+    rhdf5::H5Fclose(h5)
   }
 
   WriteRunInfo <- function(study.path, omics, n.cell, title) {
@@ -166,5 +186,6 @@ WriteStudy <- function(
   WriteExpressionData(expr.data, study.path)
   WriteMetadata(metadata, study.path, clustering.name)
   WriteDimred(dimred.data, study.path)
+  WriteLowDimred(dimred.data, study.path)
   WriteRunInfo(study.path, unique(expr.data$feature.type), ncol(expr.data$norms))
 }
