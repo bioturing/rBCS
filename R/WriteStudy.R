@@ -41,6 +41,7 @@ WriteStudy <- function(
     rhdf5::h5write(Matrix::colSums(expr.data$norms), h5, "colsum/lognorm")
     Meow("Writing matrices...")
     WriteH5Matrix(expr.data$counts, h5, "bioturing")
+    rhdf5::h5write(expr.data$feature_type, h5, "bioturing/feature_type")
     WriteH5Matrix(Matrix::t(expr.data$counts), h5, "countsT")
     WriteH5Matrix(Matrix::t(expr.data$norms), h5, "normalizedT")
     rhdf5::H5Fclose(h5)
@@ -187,5 +188,5 @@ WriteStudy <- function(
   WriteMetadata(metadata, study.path, clustering.name)
   WriteDimred(dimred.data, study.path)
   WriteLowDimred(dimred.data, study.path)
-  WriteRunInfo(study.path, unique(expr.data$feature.type), ncol(expr.data$norms))
+  WriteRunInfo(study.path, unique(expr.data$feature_type), ncol(expr.data$norms))
 }
