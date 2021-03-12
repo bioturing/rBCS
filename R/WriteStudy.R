@@ -44,7 +44,7 @@ WriteStudy <- function(
     WriteH5Matrix(Matrix::t(expr.data$counts), h5, "countsT")
     WriteH5Matrix(Matrix::t(expr.data$norms), h5, "normalizedT")
     rhdf5::H5Fclose(h5)
-    writeLines(rownames(expr.data$norms), file.path(study.path, "main", "genes.tsv"))
+    writeLines(expr.data$feature.name, file.path(study.path, "main", "genes.tsv"))
     writeLines(colnames(expr.data$norms), file.path(study.path, "main", "barcodes.tsv"))
   }
 

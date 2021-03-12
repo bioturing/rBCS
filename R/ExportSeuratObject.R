@@ -76,7 +76,9 @@ ExportSeuratObject <- function(
       feature.name <- rownames(norms)
       feature.name[feature.type == "ADT"] <- paste("ADT", feature.name[feature.type == "ADT"], sep="-")
     }
-    return(list(counts=counts, norms=norms, feature_type=feature.type))
+    rownames(norms) <- feature.name
+    rownames(counts) <- feature.name
+    return(list(counts=counts, norms=norms, feature_type=feature.type, feature.name=feature.name))
   }
 
   GetDimredData <- function(object) {
