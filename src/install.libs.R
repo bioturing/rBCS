@@ -12,7 +12,7 @@ if (os == "Linux") {
 } else if (os == "Windows") {
 	files <- file.path(R_PACKAGE_SOURCE, "src/bcs_transpose.pyx.dist.win")
 } else if (os == "Darwin") {
-	files <- file.path(R_PACKAGE_SOURCE, "src/bcs_transpose.pyx.dist.mac")
+	files <- file.path(R_PACKAGE_SOURCE, "src/bcs_transpose.pyx.dist.darwin")
 }
 
 # Copy file
