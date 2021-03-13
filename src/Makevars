@@ -1,9 +1,0 @@
-USER_INCLUDE = ${R_PACKAGE_DIR}/include
-USER_LIB_DIR = ${R_PACKAGE_DIR}/lib${R_ARCH}
-
-all: copying
-
-copying:
-	mkdir -p "${USER_LIB_DIR}"
-	cp -r "light_transpose.pyx.dist" "$(USER_LIB_DIR)"
-
