@@ -3,7 +3,9 @@ os <- Sys.info()[['sysname']]
 
 # The installation destination. Please use the same way to load the binary
 dest <- file.path(R_PACKAGE_DIR, paste0('libs', R_ARCH))
-dir.create(dest, recursive = TRUE, showWarnings = TRUE)
+if (! dir.exists(dest)) {
+	dir.create(dest, recursive = TRUE, showWarnings = TRUE)
+}
 
 if (os == "Linux") {
 	files <- file.path(R_PACKAGE_SOURCE, "src/bcs_transpose.pyx.dist.linux")
