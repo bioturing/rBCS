@@ -46,6 +46,8 @@ ExportSeuratObject <- function(
   ValidateInput <- function() {
     if (length(object@reductions) == 0) {
       stop("Seurat object has no dimensionality reduction")
+    } else if (length(object@redutions) == 1 && names(object@reductions) == "pca") {
+      stop("Seurat object has no dimensionality reduction other than pca")
     }
     if (!"RNA" %in% names(object@assays)) {
       stop("Seurat object must have an RNA assay")
