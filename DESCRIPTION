@@ -1,6 +1,6 @@
 Package: rBCS
 Title: Handle BioTuring Compressed File
-Version: 0.0.10
+Version: 0.0.11
 Author: BioTuring
 Maintainer: BioTuring <support@bioturing.com>
 Description: Convert single cell data to BioTuring Compressed File.
