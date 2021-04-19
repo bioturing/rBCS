@@ -19,8 +19,10 @@ WriteStudy <- function(
 
   WriteH5Matrix <- function(matrix, h5, group, write.labels=TRUE) {
     rhdf5::h5createGroup(h5, group)
+    rhdf5::h5createDataset(h5, paste0(group, "/data"), storage.mode="double", dims=length(matrix@x), chunk=min(10000, length(matrix@x)), level=1)
     rhdf5::h5write(matrix@x, h5, paste0(group, "/data"))
     rhdf5::h5write(matrix@p, h5, paste0(group, "/indptr"))
+    rhdf5::h5createDataset(h5, paste0(group, "/indices"), storage.mode="integer", dims=length(matrix@i), chunk=min(10000, length(matrix@i)), level=1)
     rhdf5::h5write(matrix@i, h5, paste0(group, "/indices"))
     rhdf5::h5write(dim(matrix), h5, paste0(group, "/shape"))
     if (write.labels) {
