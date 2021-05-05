@@ -54,6 +54,28 @@ renameFCS <- function(fs, channelDetails) {
 	for (i in 1:length(fs)) {
 		colnames(fs[[i]]) <- as.character(xcolnames[[i]])
 	}
+	return(fs)
+}
 
+samplingCells <- function(fs, numCells, isEven = T) {
+	n <- length(fs)
+	if (isEven) {
+		message("Even sampling...")
+		targetedNumber <- min(floor(numCells / n), as.integer(lapply(fs, nrow)))
+		message(paste(targetedNumber, "is the targeted number of cells for each sample"))
+		cellsPerSample <- rep(targetedNumber, n)
+		print(cellsPerSample)
+	} else {
+		message("Non-even sampling...")
+		nCellsPerSample <- as.integer(lapply(fs, nrow))
+		origTotalCells <- sum(nCellsPerSample)
+		targetedRatios <- numCells / origTotalCells
+		cellsPerSample <- floor(targetedRatios * nCellsPerSample)
+		print(cellsPerSample)
+	}
+	for (i in 1:n) {
+		fcs <- fs[[i]]
+		fs[[i]] <- fcs[sample(1:nrow(fcs), cellsPerSample[i]), ]
+	}
 	return(fs)
 }
