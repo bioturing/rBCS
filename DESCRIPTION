@@ -16,4 +16,5 @@ Imports:
     uuid,
     methods,
     utils,
-    zip
+    zip,
+    flowCore
