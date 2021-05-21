@@ -103,9 +103,9 @@ WriteStudy <- function(
         id = "graph_based",
         name = "Graph-based clusters",
         type = "category",
-        clusters = rep(1, ncol(norms)),
+        clusters = rep(1, ncol(expr.data$norms)),
         clusterName = c("Unassigned", "Cluster 1"),
-        clusterLength = c(0, ncol(norms)),
+        clusterLength = c(0, ncol(expr.data$norms)),
         history = list(CreateCommit())
       )
       jsonlite::write_json(graph, file.path(meta.dir, "graph_based.json"), auto_unbox=TRUE)
